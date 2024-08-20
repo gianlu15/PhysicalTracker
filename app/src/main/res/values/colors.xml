@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#4D9DE0</color> <!-- Un colore blu -->
+    <color name="colorPrimaryDark">#303F9F</color> <!-- Una variante più scura del blu -->
+    <color name="colorAccent">#FF4081</color> <!-- Un colore rosa acceso -->
+    <color name="colorToolbarText">#FFFFFF</color> <!-- Bianco per il testo della Toolbar -->
+
+    <color name="startBtn">#3BB273</color>
+    <color name="stopBtn">#E15554</color>
+    <color name="pauseBtn">#9E9E9E</color>
+</resources>
