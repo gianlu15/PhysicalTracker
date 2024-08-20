@@ -4,21 +4,34 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Chronometer
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import com.example.physicaltracker.physicalactivity.BaseActivity
+import com.example.physicaltracker.physicalactivity.Driving
+import com.example.physicaltracker.physicalactivity.Sitting
+import com.example.physicaltracker.physicalactivity.Walking
 
 class RecordFragment : Fragment(R.layout.fragment_record) {
 
-    private lateinit var chronometer: Chronometer   //inizializzato dopo
+    private lateinit var chronometer: Chronometer
     private var isRunning = false
     private var pauseOffset: Long = 0
+
+    private var currentActivity: BaseActivity? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         chronometer = view.findViewById(R.id.chronometer)
 
+        val activitySpinner: Spinner = view.findViewById(R.id.spActivityList)
+        val activityTypes = resources.getStringArray(R.array.activity_types)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, activityTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        activitySpinner.adapter = adapter
 
         val btnStart: Button = view.findViewById(R.id.btnStart)
         val btnPauseResume: Button = view.findViewById(R.id.btnPauseResume)
@@ -28,6 +41,16 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         btnStop.isEnabled = false
 
         btnStart.setOnClickListener {
+            val selectedActivityType = activitySpinner.selectedItem.toString()
+
+            currentActivity = when (selectedActivityType) {
+                "Walking" -> Walking()
+                "Sitting" -> Sitting()
+                "Driving" -> Driving()
+                else -> null
+            }
+
+            currentActivity?.start()
             startChronometer(btnStart, btnPauseResume, btnStop)
         }
 
@@ -43,43 +66,37 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
 
         btnStop.setOnClickListener {
             stopChronometer(btnStart, btnPauseResume, btnStop)
+            currentActivity?.stop()
+            Log.i("RecordFragment", currentActivity?.getDetails() ?: "No activity recorded")
             btnPauseResume.text = "Pause"
         }
     }
 
     private fun startChronometer(btnStart: Button, btnPauseResume: Button, btnStop: Button) {
         if (!isRunning) {
-            chronometer.base = SystemClock.elapsedRealtime()    //tempo, in millisecondi dal momento in cui il dispositivo è stato avviato
+            chronometer.base = SystemClock.elapsedRealtime()
             chronometer.start()
             isRunning = true
 
             btnStart.isEnabled = false
             btnPauseResume.isEnabled = true
             btnStop.isEnabled = true
-
-            Log.i("Record Fragment", "Cronometro avviato")
         }
     }
 
     private fun pauseChronometer() {
         if (isRunning) {
             chronometer.stop()
-            pauseOffset = SystemClock.elapsedRealtime() - chronometer.base  //salvo il tempo trascorso
+            pauseOffset = SystemClock.elapsedRealtime() - chronometer.base
             isRunning = false
-
-            Log.i("Record Fragment", "Cronometro messo in pausa ad $pauseOffset")
-
         }
     }
 
     private fun resumeChronometer() {
         if (!isRunning) {
-            chronometer.base = SystemClock.elapsedRealtime() - pauseOffset  //riprendo dal tempo di prima
+            chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
             chronometer.start()
             isRunning = true
-
-            Log.i("Record Fragment", "Cronometro ripreso da ${chronometer.base}")
-
         }
     }
 
@@ -92,8 +109,5 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         btnStart.isEnabled = true
         btnPauseResume.isEnabled = false
         btnStop.isEnabled = false
-
-        Log.i("Record Fragment", "Cronometro stoppato")
-
     }
 }

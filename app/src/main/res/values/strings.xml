@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Physical tracker</string>
+
+    <string-array name="activity_types">
+        <item>Walking</item>
+        <item>Sitting</item>
+        <item>Driving</item>
+    </string-array>
+
 </resources>
