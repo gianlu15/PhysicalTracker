@@ -9,21 +9,24 @@ import android.widget.Button
 import android.widget.Chronometer
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import com.example.physicaltracker.physicalactivity.BaseActivity
-import com.example.physicaltracker.physicalactivity.Driving
-import com.example.physicaltracker.physicalactivity.Sitting
-import com.example.physicaltracker.physicalactivity.Walking
+import androidx.lifecycle.ViewModelProvider
+import com.example.physicaltracker.data.ActivityEntity
+import com.example.physicaltracker.data.ActivityViewModel
 
 class RecordFragment : Fragment(R.layout.fragment_record) {
+
+    private lateinit var myActivityViewModel: ActivityViewModel
 
     private lateinit var chronometer: Chronometer
     private var isRunning = false
     private var pauseOffset: Long = 0
 
-    private var currentActivity: BaseActivity? = null
+    private var currentActivity: ActivityEntity? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        myActivityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
 
         chronometer = view.findViewById(R.id.chronometer)
 
@@ -43,15 +46,15 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         btnStart.setOnClickListener {
             val selectedActivityType = activitySpinner.selectedItem.toString()
 
-            currentActivity = when (selectedActivityType) {
-                "Walking" -> Walking()
-                "Sitting" -> Sitting()
-                "Driving" -> Driving()
-                else -> null
-            }
+            currentActivity = ActivityEntity(
+                type = selectedActivityType,
+                duration = 0L,    // Inizializza a 0, lo aggiornerai quando fermerai il cronometro
+            )
 
-            currentActivity?.start()
-            startChronometer(btnStart, btnPauseResume, btnStop)
+            startChronometer()
+            btnStart.isEnabled = false
+            btnPauseResume.isEnabled = true
+            btnStop.isEnabled = true
         }
 
         btnPauseResume.setOnClickListener {
@@ -65,22 +68,22 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         }
 
         btnStop.setOnClickListener {
-            stopChronometer(btnStart, btnPauseResume, btnStop)
-            currentActivity?.stop()
-            Log.i("RecordFragment", currentActivity?.getDetails() ?: "No activity recorded")
+            stopChronometer(currentActivity)
             btnPauseResume.text = "Pause"
+
+            btnStart.isEnabled = true
+            btnPauseResume.isEnabled = false
+            btnStop.isEnabled = false
         }
     }
 
-    private fun startChronometer(btnStart: Button, btnPauseResume: Button, btnStop: Button) {
+    private fun startChronometer() {
         if (!isRunning) {
             chronometer.base = SystemClock.elapsedRealtime()
             chronometer.start()
             isRunning = true
 
-            btnStart.isEnabled = false
-            btnPauseResume.isEnabled = true
-            btnStop.isEnabled = true
+            Log.i("RecordFragment", "Cronometro avviato")
         }
     }
 
@@ -89,6 +92,9 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             chronometer.stop()
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.base
             isRunning = false
+
+
+            Log.i("RecordFragment", "Cronometro fermato ad $pauseOffset")
         }
     }
 
@@ -97,17 +103,28 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
             chronometer.start()
             isRunning = true
+
+            Log.i("RecordFragment", "Cronometro ripreso da $pauseOffset")
         }
     }
 
-    private fun stopChronometer(btnStart: Button, btnPauseResume: Button, btnStop: Button) {
+    private fun stopChronometer(currentActivity: ActivityEntity?) {
         chronometer.stop()
+        currentActivity?.duration = SystemClock.elapsedRealtime() - chronometer.base
         pauseOffset = 0
         isRunning = false
         chronometer.base = SystemClock.elapsedRealtime()
 
-        btnStart.isEnabled = true
-        btnPauseResume.isEnabled = false
-        btnStop.isEnabled = false
+        Log.i("RecordFragment", "Cronometro stoppato")
+
+        insertDataToDatabase(currentActivity)
+    }
+
+    private fun insertDataToDatabase(currentActivity: ActivityEntity?) {
+        if (currentActivity != null) {
+            myActivityViewModel.addActivity(currentActivity)
+            Log.i("RecordFragment", "Insert ${currentActivity.toString()} into db")
+
+        }
     }
 }
