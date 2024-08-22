@@ -61,7 +61,7 @@
         android:layout_marginHorizontal="16dp"
         android:paddingVertical="12dp"
         android:text="Pause"
-        android:backgroundTint="@color/pauseBtn"
+        android:background="@drawable/rounded_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

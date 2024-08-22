@@ -7,7 +7,15 @@ import androidx.lifecycle.LiveData
 class ActivityRepository(private val activityDao: ActivityDao) {
 
     val readAllData: LiveData<List<ActivityEntity>> = activityDao.readAllData()
+    val readAllDataSortedByDuration: LiveData<List<ActivityEntity>> = activityDao.readAllDataSortedByDuration()
 
+    fun readAllDataByType(activityType: String): LiveData<List<ActivityEntity>> {
+        return activityDao.readAllDataByType(activityType)
+    }
+
+    fun readAllDataByTypeSortedByDuration(activityType: String): LiveData<List<ActivityEntity>> {
+        return activityDao.readAllDataByTypeSortedByDuration(activityType)
+    }
     suspend fun addActivity(activity: ActivityEntity){
         activityDao.addActivity(activity)
     }

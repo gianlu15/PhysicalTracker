@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 class ActivityViewModel(application: Application): AndroidViewModel(application) {
 
     val readAllData: LiveData<List<ActivityEntity>>
+    val readAllDataSortedByDuration: LiveData<List<ActivityEntity>>
     private val repository: ActivityRepository
 
     var isChronometerRunning: Boolean = false
@@ -22,11 +23,20 @@ class ActivityViewModel(application: Application): AndroidViewModel(application)
         val activityDao = ActivityDatabase.getDatabase(application).activityDao()
         repository = ActivityRepository(activityDao)
         readAllData = repository.readAllData
+        readAllDataSortedByDuration = repository.readAllDataSortedByDuration
     }
 
     fun addActivity(activity: ActivityEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addActivity(activity)
         }
+    }
+
+    fun getAllDataByType(activityType: String): LiveData<List<ActivityEntity>> {
+        return repository.readAllDataByType(activityType)
+    }
+
+    fun getAllDataByTypeSortedByDuration(activityType: String): LiveData<List<ActivityEntity>> {
+        return repository.readAllDataByTypeSortedByDuration(activityType)
     }
 }

@@ -27,9 +27,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = activityList[position]
         holder.binding.apply {
+            tvDate.text = formatDate(currentItem.date)
             tvType.text = currentItem.type
             tvStartTime.text = formatTime(currentItem.startTime)
-            tvEndTime.text = currentItem.endTime?.let { formatTime(it) } ?: "In Progress"
+            tvEndTime.text = formatTime(currentItem.startTime)
             tvDuration.text = formatDuration(currentItem.duration)
         }
     }
@@ -49,8 +50,15 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
     // Funzione per formattare il tempo in una data leggibile
     private fun formatTime(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
         val date = Date(timeInMillis)
         return sdf.format(date)
     }
+
+    private fun formatDate(timeInMillis: Long): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = Date(timeInMillis)
+        return sdf.format(date)
+    }
+
 }

@@ -14,4 +14,14 @@ interface ActivityDao {
 
     @Query("SELECT * FROM activity_table")
     fun readAllData(): LiveData<List<ActivityEntity>>
+
+    @Query("SELECT * FROM activity_table ORDER BY duration DESC")
+    fun readAllDataSortedByDuration(): LiveData<List<ActivityEntity>>
+
+    @Query("SELECT * FROM activity_table WHERE type = :activityType")
+    fun readAllDataByType(activityType: String): LiveData<List<ActivityEntity>>
+
+    @Query("SELECT * FROM activity_table WHERE type = :activityType ORDER BY duration DESC")
+    fun readAllDataByTypeSortedByDuration(activityType: String): LiveData<List<ActivityEntity>>
 }
+

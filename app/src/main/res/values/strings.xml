@@ -7,4 +7,11 @@
         <item>Driving</item>
     </string-array>
 
+    <string-array name="activity_types_all">
+        <item>All</item>
+        <item>Walking</item>
+        <item>Sitting</item>
+        <item>Driving</item>
+    </string-array>
+
 </resources>

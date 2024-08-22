@@ -10,4 +10,5 @@
     <color name="startBtn">#3BB273</color>
     <color name="stopBtn">#E15554</color>
     <color name="pauseBtn">#9E9E9E</color>
+    <color name="filterBtn">#8D3B72</color>
 </resources>
