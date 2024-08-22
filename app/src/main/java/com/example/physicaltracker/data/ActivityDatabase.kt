@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 //Contains the DB
 
-@Database(entities = [ActivityEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ActivityEntity::class], version = 2, exportSchema = false)
 abstract class ActivityDatabase: RoomDatabase() {
 
     abstract  fun activityDao(): ActivityDao
@@ -27,7 +27,7 @@ abstract class ActivityDatabase: RoomDatabase() {
                      context.applicationContext,
                     ActivityDatabase::class.java,
                     name = "activity_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }

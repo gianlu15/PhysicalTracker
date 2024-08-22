@@ -7,21 +7,24 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
-//Provide data to UI and survive configuration changes, act as communication center between Repository and UI
+// Provide data to UI and survive configuration changes, act as communication center between Repository and UI
 
 class ActivityViewModel(application: Application): AndroidViewModel(application) {
 
-    private val readAllData: LiveData<List<ActivityEntity>>
+    val readAllData: LiveData<List<ActivityEntity>>
     private val repository: ActivityRepository
 
-    init{
+    var isChronometerRunning: Boolean = false
+    var chronometerBase: Long = 0L
+    var pauseOffset: Long = 0L
+
+    init {
         val activityDao = ActivityDatabase.getDatabase(application).activityDao()
         repository = ActivityRepository(activityDao)
         readAllData = repository.readAllData
     }
 
-    fun addActivity(activity: ActivityEntity){
+    fun addActivity(activity: ActivityEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addActivity(activity)
         }
