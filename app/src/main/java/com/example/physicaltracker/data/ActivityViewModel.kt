@@ -39,4 +39,8 @@ class ActivityViewModel(application: Application): AndroidViewModel(application)
     fun getAllDataByTypeSortedByDuration(activityType: String): LiveData<List<ActivityEntity>> {
         return repository.readAllDataByTypeSortedByDuration(activityType)
     }
+
+    fun getActivitiesByDate(startOfDay: Long, endOfDay: Long): LiveData<List<ActivityEntity>> {
+        return repository.getActivitiesByDate(startOfDay, endOfDay)
+    }
 }

@@ -19,4 +19,8 @@ class ActivityRepository(private val activityDao: ActivityDao) {
     suspend fun addActivity(activity: ActivityEntity){
         activityDao.addActivity(activity)
     }
+
+    fun getActivitiesByDate(startOfDay: Long, endOfDay: Long): LiveData<List<ActivityEntity>> {
+        return activityDao.getActivitiesByDate(startOfDay, endOfDay)
+    }
 }
