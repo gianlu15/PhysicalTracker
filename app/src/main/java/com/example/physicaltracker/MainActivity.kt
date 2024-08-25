@@ -1,7 +1,11 @@
 package com.example.physicaltracker
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -28,6 +32,8 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        requestPermission()
     }
 
     private fun setCurrentFragment(fragment: Fragment) =
@@ -35,4 +41,33 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.flFrame, fragment)
             commit()
         }
+
+    private fun hasActivityRecognitionPermission() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+
+    private fun requestPermission(){
+        var permissionTORequest = mutableListOf<String>()
+        if(!hasActivityRecognitionPermission()){
+            permissionTORequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
+
+        if(permissionTORequest.isNotEmpty()){
+            ActivityCompat.requestPermissions(this, permissionTORequest.toTypedArray(), 0)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 0 && grantResults.isNotEmpty()){
+            for(i in grantResults.indices){
+                if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                    Log.i("PERMISSION REQUEST", "${permissions[i]} granted.")
+                }
+            }
+        }
+    }
 }

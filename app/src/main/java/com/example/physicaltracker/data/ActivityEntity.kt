@@ -8,7 +8,7 @@ data class ActivityEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val type: String,
     var duration: Long,
-    val steps: Int? = null,
+    var steps: Int? = null,
     val startTime: Long,
     var endTime: Long? = null,
     val date: Long
