@@ -7,6 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.example.physicaltracker.calendar.CalendarFragment
+import com.example.physicaltracker.charts.ChartsFragment
+import com.example.physicaltracker.history.HistoryFragment
+import com.example.physicaltracker.record.RecordFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         val chartsFragment = ChartsFragment()
         val recordFragment = RecordFragment()
         val historyFragment = HistoryFragment()
+        var calendarFragment = CalendarFragment()
 
         setCurrentFragment(chartsFragment)
 
@@ -29,6 +34,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.myStatistics -> setCurrentFragment(chartsFragment)
                 R.id.myNewActivity -> setCurrentFragment(recordFragment)
                 R.id.myHistory -> setCurrentFragment(historyFragment)
+                R.id.myCalendar -> setCurrentFragment(calendarFragment)
             }
             true
         }

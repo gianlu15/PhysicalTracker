@@ -1,4 +1,4 @@
-package com.example.physicaltracker
+package com.example.physicaltracker.history
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

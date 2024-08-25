@@ -1,4 +1,4 @@
-package com.example.physicaltracker
+package com.example.physicaltracker.history
 
 import android.os.Bundle
 import android.view.View
@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.physicaltracker.R
 import com.example.physicaltracker.data.ActivityViewModel
 
 class HistoryFragment : Fragment(R.layout.fragment_history) {

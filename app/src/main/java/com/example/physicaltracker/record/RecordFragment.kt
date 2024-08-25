@@ -1,4 +1,4 @@
-package com.example.physicaltracker
+package com.example.physicaltracker.record
 
 import android.content.Context
 import android.hardware.Sensor
@@ -16,6 +16,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.physicaltracker.R
 import com.example.physicaltracker.data.ActivityEntity
 import com.example.physicaltracker.data.ActivityViewModel
 

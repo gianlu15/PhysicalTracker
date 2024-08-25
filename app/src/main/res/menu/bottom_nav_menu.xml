@@ -16,5 +16,10 @@
         android:title="History"
         android:icon="@drawable/ic_history_foreground" />
 
+    <item
+        android:id="@+id/myCalendar"
+        android:title="Calendar"
+        android:icon="@drawable/ic_calendar_foreground" />
+
 
 </menu>
