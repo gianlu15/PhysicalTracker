@@ -167,6 +167,8 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             currentActivity.duration = SystemClock.elapsedRealtime() - chronometer.base
             currentActivity.endTime = System.currentTimeMillis()
             insertDataToDatabase(currentActivity)
+            myActivityViewModel.checkAndInsertUnknownActivities()
+
         }
         resetChronometer()
     }

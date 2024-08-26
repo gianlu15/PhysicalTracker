@@ -11,16 +11,21 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.physicaltracker.calendar.CalendarFragment
 import com.example.physicaltracker.charts.ChartsFragment
+import com.example.physicaltracker.data.ActivityViewModel
 import com.example.physicaltracker.history.HistoryFragment
 import com.example.physicaltracker.record.RecordFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var activityViewModel: ActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,6 +54,10 @@ class MainActivity : AppCompatActivity() {
         requestPermission()
         createNotificationChannel(this)
         schedulePeriodicNotification()
+
+        activityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
+        activityViewModel.checkAndInsertUnknownActivities()
+
     }
 
     private fun setCurrentFragment(fragment: Fragment) =

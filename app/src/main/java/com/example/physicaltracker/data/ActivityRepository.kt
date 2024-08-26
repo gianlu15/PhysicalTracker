@@ -1,6 +1,11 @@
 package com.example.physicaltracker.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 //Access to multiple data sources
 
@@ -22,5 +27,40 @@ class ActivityRepository(private val activityDao: ActivityDao) {
 
     fun getActivitiesByDate(startOfDay: Long, endOfDay: Long): LiveData<List<ActivityEntity>> {
         return activityDao.getActivitiesByDate(startOfDay, endOfDay)
+    }
+
+    suspend fun insertUnknownActivities() {
+        val activities = activityDao.readAllDataSortedByStartTime()
+
+        for (i in 0 until activities.size - 1) {
+            val currentActivity = activities[i]
+            val nextActivity = activities[i + 1]
+
+            val endTime = currentActivity.endTime ?: continue
+            val startTimeNext = nextActivity.startTime
+
+
+            // Calcola il gap tra le attività
+            val gap = startTimeNext - endTime
+
+            // Se il gap è maggiore di una soglia (es. 30 minuti), inserisci "unknown"
+            if (gap > TimeUnit.MINUTES.toMillis(30)) {
+                val unknownActivity = ActivityEntity(
+                    type = "unknown",
+                    duration = gap,
+                    startTime = endTime,
+                    endTime = startTimeNext,
+                    date = endTime // Puoi usare endTime o un'altra logica per la data
+                )
+                activityDao.addActivity(unknownActivity)
+            }
+        }
+
+    }
+
+    private fun formatTime(timeInMillis: Long): String {
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
+        val date = Date(timeInMillis)
+        return sdf.format(date)
     }
 }

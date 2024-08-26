@@ -30,7 +30,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
             tvDate.text = formatDate(currentItem.date)
             tvType.text = currentItem.type
             tvStartTime.text = formatTime(currentItem.startTime)
-            tvEndTime.text = formatTime(currentItem.startTime)
+            tvEndTime.text = formatTime(currentItem.endTime!!)
             tvDuration.text = formatDuration(currentItem.duration)
         }
     }

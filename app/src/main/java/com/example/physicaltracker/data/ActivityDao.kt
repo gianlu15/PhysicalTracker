@@ -26,5 +26,8 @@ interface ActivityDao {
 
     @Query("SELECT * FROM activity_table WHERE date BETWEEN :startOfDay AND :endOfDay")
     fun getActivitiesByDate(startOfDay: Long, endOfDay: Long): LiveData<List<ActivityEntity>>
+
+    @Query("SELECT * FROM activity_table ORDER BY startTime ASC")
+    fun readAllDataSortedByStartTime(): List<ActivityEntity>
 }
 

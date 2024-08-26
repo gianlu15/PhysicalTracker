@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/tvType"
-        android:layout_width="65dp"
+        android:layout_width="75dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:text="Tipo "
@@ -34,7 +34,7 @@
         android:id="@+id/tvDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="20dp"
         android:text="durata"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"

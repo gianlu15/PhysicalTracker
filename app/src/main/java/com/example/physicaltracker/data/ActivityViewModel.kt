@@ -43,4 +43,10 @@ class ActivityViewModel(application: Application): AndroidViewModel(application)
     fun getActivitiesByDate(startOfDay: Long, endOfDay: Long): LiveData<List<ActivityEntity>> {
         return repository.getActivitiesByDate(startOfDay, endOfDay)
     }
+
+    fun checkAndInsertUnknownActivities() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertUnknownActivities()
+        }
+    }
 }
