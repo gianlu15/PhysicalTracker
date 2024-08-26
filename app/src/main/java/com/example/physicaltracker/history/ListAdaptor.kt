@@ -56,7 +56,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     }
 
     private fun formatDate(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
         val date = Date(timeInMillis)
         return sdf.format(date)
     }
