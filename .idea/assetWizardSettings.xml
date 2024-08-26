@@ -313,8 +313,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_footsteps" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/app/src/main/res/drawable/footsteps.svg" />
+                            <entry key="outputName" value="ic_physical" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/app/src/main/res/drawable/physical.svg" />
                           </map>
                         </option>
                       </PersistentState>

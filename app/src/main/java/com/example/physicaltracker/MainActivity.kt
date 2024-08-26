@@ -1,17 +1,24 @@
 package com.example.physicaltracker
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.physicaltracker.calendar.CalendarFragment
 import com.example.physicaltracker.charts.ChartsFragment
 import com.example.physicaltracker.history.HistoryFragment
 import com.example.physicaltracker.record.RecordFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestPermission()
+        createNotificationChannel(this)
+        schedulePeriodicNotification()
     }
 
     private fun setCurrentFragment(fragment: Fragment) =
@@ -51,10 +60,17 @@ class MainActivity : AppCompatActivity() {
     private fun hasActivityRecognitionPermission() =
         ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
 
+    private fun hasNotificationPermission() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+
     private fun requestPermission(){
         var permissionTORequest = mutableListOf<String>()
         if(!hasActivityRecognitionPermission()){
             permissionTORequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
+
+        if(!hasNotificationPermission()){
+            permissionTORequest.add(Manifest.permission.POST_NOTIFICATIONS)
         }
 
         if(permissionTORequest.isNotEmpty()){
@@ -75,5 +91,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "activity_reminder_channel"
+            val channelName = "Activity Reminder"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, channelName, importance).apply {
+                description = "Channel for activity reminders"
+            }
+
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun schedulePeriodicNotification() {
+        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+            .setInitialDelay(1, TimeUnit.HOURS)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(workRequest)
     }
 }

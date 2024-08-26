@@ -12,7 +12,7 @@ interface ActivityDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addActivity(newActivity: ActivityEntity)
 
-    @Query("SELECT * FROM activity_table")
+    @Query("SELECT * FROM activity_table ORDER BY date DESC")
     fun readAllData(): LiveData<List<ActivityEntity>>
 
     @Query("SELECT * FROM activity_table ORDER BY duration DESC")

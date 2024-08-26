@@ -88,6 +88,8 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
 
             startChronometer()
 
+            saveChronometerState(true)
+
             // Avvia il contapassi solo se l'attività è "Walking"
             if (isWalking) {
                 steps = 0 // Resetta il contatore dei passi
@@ -102,9 +104,11 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         btnPauseResume.setOnClickListener {
             if (myActivityViewModel.isChronometerRunning) {
                 pauseChronometer()
+                saveChronometerState(false)
                 btnPauseResume.text = "Resume"
             } else {
                 resumeChronometer()
+                saveChronometerState(true)
                 btnPauseResume.text = "Pause"
             }
         }
@@ -117,6 +121,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             }
 
             stopChronometer(currentActivity)
+            saveChronometerState(false)
             btnPauseResume.text = "Pause"
 
             btnStart.isEnabled = true
@@ -193,6 +198,14 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
             // Non è necessario gestire questo caso per il contapassi
+        }
+    }
+
+    private fun saveChronometerState(isRunning: Boolean) {
+        val sharedPreferences = requireContext().getSharedPreferences("activity_tracker_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("is_chronometer_running", isRunning)
+            apply()
         }
     }
 }
