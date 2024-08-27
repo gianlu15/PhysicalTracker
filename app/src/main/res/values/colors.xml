@@ -11,4 +11,11 @@
     <color name="stopBtn">#E15554</color>
     <color name="pauseBtn">#9E9E9E</color>
     <color name="filterBtn">#8D3B72</color>
+
+    <color name="firstActivityPie">#EF476F</color>
+    <color name="secondActivityPie">#FFD166</color>
+    <color name="thirdActivityPie">#06D6A0</color>
+    <color name="fourthActivityPie">#826AED</color>
+    <color name="fifthActivityPie">#D8D4F2</color>
+
 </resources>
