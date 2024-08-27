@@ -1,22 +1,22 @@
-package com.example.physicaltracker.history
+package com.example.physicaltracker.calendar
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.physicaltracker.data.ActivityEntity
-import com.example.physicaltracker.databinding.ItemActivityBinding
+import com.example.physicaltracker.databinding.ItemActivityCalendarBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
+class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.MyViewHolder>() {
 
     private var activityList = emptyList<ActivityEntity>()
 
-    inner class MyViewHolder(val binding: ItemActivityBinding): RecyclerView.ViewHolder(binding.root)
+    inner class MyViewHolder(val binding: ItemActivityCalendarBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val binding = ItemActivityBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemActivityCalendarBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
     }
 
@@ -27,10 +27,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = activityList[position]
         holder.binding.apply {
-            tvDate.text = formatDate(currentItem.date)
-            tvType.text = currentItem.type
             tvStartTime.text = formatTime(currentItem.startTime)
-            tvStepsCounter.text = currentItem.steps.toString()
+            tvEndTime.text = formatTime(currentItem.endTime!!)
+            tvType.text = currentItem.type
             tvDuration.text = formatDuration(currentItem.duration)
         }
     }
@@ -40,7 +39,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    // Funzione per formattare la durata in ore, minuti e secondi
+    // Formatta la durata in ore, minuti e secondi
     private fun formatDuration(duration: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(duration)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60
@@ -48,17 +47,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
-    // Funzione per formattare il tempo in una data leggibile
+    // Formatta il tempo in una stringa leggibile
     private fun formatTime(timeInMillis: Long): String {
         val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
         val date = Date(timeInMillis)
         return sdf.format(date)
     }
-
-    private fun formatDate(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
-        val date = Date(timeInMillis)
-        return sdf.format(date)
-    }
-
 }

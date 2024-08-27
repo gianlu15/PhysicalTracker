@@ -30,6 +30,7 @@ class ActivityRepository(private val activityDao: ActivityDao) {
     }
 
     suspend fun insertUnknownActivities() {
+        Log.i("ActivityRepository", "Check effettuato")
         val activities = activityDao.readAllDataSortedByStartTime()
 
         for (i in 0 until activities.size - 1) {

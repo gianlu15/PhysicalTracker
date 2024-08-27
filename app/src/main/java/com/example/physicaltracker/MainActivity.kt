@@ -36,9 +36,11 @@ class MainActivity : AppCompatActivity() {
         val historyFragment = HistoryFragment()
         var calendarFragment = CalendarFragment()
 
-        setCurrentFragment(chartsFragment)
+        setCurrentFragment(recordFragment)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        bottomNavigationView.selectedItemId = R.id.myNewActivity
 
         // Imposta il listener per la selezione degli elementi
         bottomNavigationView.setOnItemSelectedListener {
