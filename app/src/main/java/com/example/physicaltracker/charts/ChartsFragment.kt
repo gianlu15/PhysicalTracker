@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.physicaltracker.data.ActivityEntity
+import com.example.physicaltracker.data.entity.ActivityEntity
 import com.example.physicaltracker.data.ActivityViewModel
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.charts.BarChart

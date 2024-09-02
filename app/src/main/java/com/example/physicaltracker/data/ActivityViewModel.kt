@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.physicaltracker.data.db.AppDatabase
+import com.example.physicaltracker.data.entity.ActivityEntity
+import com.example.physicaltracker.data.repository.ActivityRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -20,7 +23,7 @@ class ActivityViewModel(application: Application): AndroidViewModel(application)
     var pauseOffset: Long = 0L
 
     init {
-        val activityDao = ActivityDatabase.getDatabase(application).activityDao()
+        val activityDao = AppDatabase.getDatabase(application).activityDao()
         repository = ActivityRepository(activityDao)
         readAllData = repository.readAllData
         readAllDataSortedByDuration = repository.readAllDataSortedByDuration

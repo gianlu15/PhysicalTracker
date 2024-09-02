@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import androidx.work.WorkManager
 import com.example.physicaltracker.calendar.CalendarFragment
 import com.example.physicaltracker.charts.ChartsFragment
 import com.example.physicaltracker.data.ActivityViewModel
+import com.example.physicaltracker.geofence.GeofenceFragment
 import com.example.physicaltracker.history.HistoryFragment
 import com.example.physicaltracker.record.RecordFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,7 +36,8 @@ class MainActivity : AppCompatActivity() {
         val chartsFragment = ChartsFragment()
         val recordFragment = RecordFragment()
         val historyFragment = HistoryFragment()
-        var calendarFragment = CalendarFragment()
+        val calendarFragment = CalendarFragment()
+        val geofenceFragment = GeofenceFragment()
 
         setCurrentFragment(recordFragment)
 
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.myStatistics -> setCurrentFragment(chartsFragment)
+                R.id.myGeofence -> setCurrentFragment(geofenceFragment)
                 R.id.myNewActivity -> setCurrentFragment(recordFragment)
                 R.id.myHistory -> setCurrentFragment(historyFragment)
                 R.id.myCalendar -> setCurrentFragment(calendarFragment)
@@ -74,6 +78,15 @@ class MainActivity : AppCompatActivity() {
     private fun hasNotificationPermission() =
         ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
+    private fun hasAccessBackgroundLocation() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasAccessFineLocation() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasAccessCoarseLocation() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
     private fun requestPermission(){
         var permissionTORequest = mutableListOf<String>()
         if(!hasActivityRecognitionPermission()){
@@ -82,6 +95,18 @@ class MainActivity : AppCompatActivity() {
 
         if(!hasNotificationPermission()){
             permissionTORequest.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        if(!hasAccessBackgroundLocation()){
+            permissionTORequest.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+
+        if(!hasAccessCoarseLocation()){
+            permissionTORequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if(!hasAccessFineLocation()){
+            permissionTORequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
 
         if(permissionTORequest.isNotEmpty()){
@@ -95,10 +120,18 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 0 && grantResults.isNotEmpty()){
-            for(i in grantResults.indices){
-                if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 0 && grantResults.isNotEmpty()) {
+            for (i in grantResults.indices) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     Log.i("PERMISSION REQUEST", "${permissions[i]} granted.")
+                } else {
+                    Log.w("PERMISSION REQUEST", "${permissions[i]} denied.")
+                    // Se il permesso di posizione è stato negato, disabilita la funzionalità di geofencing
+                    if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION ||
+                        permissions[i] == Manifest.permission.ACCESS_BACKGROUND_LOCATION) {
+                        Toast.makeText(this, "Geofencing requires location permissions to be granted.", Toast.LENGTH_SHORT).show()
+                        // Disabilita le funzionalità basate sulla posizione qui
+                    }
                 }
             }
         }
