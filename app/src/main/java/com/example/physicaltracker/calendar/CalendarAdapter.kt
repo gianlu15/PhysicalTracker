@@ -3,7 +3,7 @@ package com.example.physicaltracker.calendar
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.physicaltracker.data.ActivityEntity
+import com.example.physicaltracker.data.entity.ActivityEntity
 import com.example.physicaltracker.databinding.ItemActivityCalendarBinding
 import java.text.SimpleDateFormat
 import java.util.*

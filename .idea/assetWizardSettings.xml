@@ -68,7 +68,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="/private/var/folders/q4/mzkz3f4s795bbwzpv_1c3cc00000gn/T/baseline_calendar_month_24.xml" />
+                                                <entry key="imagePath" value="/private/var/folders/q4/mzkz3f4s795bbwzpv_1c3cc00000gn/T/baseline_add_location_alt_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -79,7 +79,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="file:$USER_HOME$/Library/Android/sdk/icons/material/materialicons/calendar_month/baseline_calendar_month_24.xml" />
+                                                <entry key="url" value="file:$USER_HOME$/Library/Android/sdk/icons/material/materialicons/add_location_alt/baseline_add_location_alt_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -123,7 +123,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="foregroundAssetType" value="CLIP_ART" />
-                                      <entry key="outputName" value="ic_calendar" />
+                                      <entry key="outputName" value="ic_geofence" />
                                     </map>
                                   </option>
                                 </PersistentState>
