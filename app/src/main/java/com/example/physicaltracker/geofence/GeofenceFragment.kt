@@ -136,6 +136,7 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
                     .fillColor(0x22FF0000)
                     .strokeWidth(2f)
             )
+
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
     }
