@@ -3,37 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- SupportMapFragment per visualizzare la mappa -->
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <!-- TabLayout per gestire le schede -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnAddGeofence"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:tabMode="fixed"
+        app:tabGravity="fill"/>
 
-    <!-- Pulsante per aggiungere un geofence -->
-    <Button
-        android:id="@+id/btnAddGeofence"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Add Geofence"
-        app:layout_constraintBottom_toTopOf="@id/btnRemoveGeofence"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map" />
-
-    <!-- Pulsante per rimuovere tutti i geofence -->
-    <Button
-        android:id="@+id/btnRemoveGeofence"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Remove all Geofences"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnAddGeofence" />
+    <!-- ViewPager2 per gestire il contenuto delle schede -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

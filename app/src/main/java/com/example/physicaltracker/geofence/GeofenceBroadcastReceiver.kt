@@ -1,6 +1,7 @@
 package com.example.physicaltracker.geofence
 
 import android.Manifest
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,6 +16,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.physicaltracker.MainActivity
 import com.example.physicaltracker.R
+import com.example.physicaltracker.data.GeofenceTransitionViewModel
+import com.example.physicaltracker.data.GeofenceViewModel
+import com.example.physicaltracker.data.entity.GeofenceTransitionEntity
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 
@@ -28,15 +32,57 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
-        if (geofencingEvent != null) {
-            if (geofencingEvent.hasError()) {
-                val errorMessage = geofencingEvent.errorCode
-                Log.e("GeofenceBroadcastReceiver", "Error code: $errorMessage")
-                return
-            }
+        if (geofencingEvent?.hasError() == true) {
+            val errorMessage = geofencingEvent.errorCode
+            Log.e("GeofenceBroadcastReceiver", "Error code: $errorMessage")
+            return
         }
 
+        Log.i("GeofenceBroadcast", "evento ricevuto!1")
+
         val geofenceTransition = geofencingEvent?.geofenceTransition
+        val triggeringGeofences = geofencingEvent?.triggeringGeofences
+
+        Log.i("GeofenceBroadcast", "Transizione Geofence: $geofenceTransition")
+        Log.i("GeofenceBroadcast", "Geofences Triggered: ${triggeringGeofences?.size ?: 0}")
+
+
+        val transitionType = when (geofenceTransition) {
+            Geofence.GEOFENCE_TRANSITION_ENTER -> "Enter"
+            Geofence.GEOFENCE_TRANSITION_EXIT -> "Exit"
+            else -> "Unknown"
+        }
+
+        Log.i("GeofenceBroadcast", "evento ricevuto!2")
+
+        // Recupera il GeofenceViewModel
+        val viewModel = GeofenceViewModel(context.applicationContext as Application)
+
+        if (triggeringGeofences != null) {
+            for (geofence in triggeringGeofences) {
+                val geofenceId = geofence.requestId
+
+                // Usa il metodo getGeofenceById con un callback
+                viewModel.getGeofenceById(geofenceId) { geofenceEntity ->
+                    val geofenceName = geofenceEntity?.name ?: "Geofence sconosciuto"
+
+                    val geofenceTransitionEntity = GeofenceTransitionEntity(
+                        geofenceId = geofenceId,
+                        geofenceName = geofenceName,
+                        transitionType = transitionType,
+                        timestamp = System.currentTimeMillis()
+                    )
+
+                    Log.i("GeofenceBroadcast", "evento dal Geofence $geofenceName con transizione $transitionType")
+
+                    // Inserisci nel database in un thread separato
+                    val transitionViewModel = GeofenceTransitionViewModel(context.applicationContext as Application)
+
+                    Log.i("GeofenceBroadcast", "evento ricevuto! 4")
+                    transitionViewModel.insert(geofenceTransitionEntity)
+                }
+            }
+        }
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             showNotification(context, "Entered geofence area")
@@ -45,9 +91,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             showNotification(context, "Exited geofence area")
             Log.i("GeofenceBroadcastReceiver", "Exited geofence area")
         } else {
-            Log.e("GeofenceBroadcastReceiver", "Unknown geofence transition")
+            Log.i("GeofenceBroadcastReceiver", "Unknown geofence transition")
         }
     }
+
+
 
     private fun showNotification(context: Context, message: String) {
         createNotificationChannel(context)

@@ -10,5 +10,6 @@ data class GeofenceEntity(
     val latitude: Double,
     val longitude: Double,
     val radius: Float,
-    val transitionType: Int
+    val transitionType: Int,
+    val name: String  // Nuovo campo per il nome del Geofence
 )

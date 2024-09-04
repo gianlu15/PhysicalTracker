@@ -6,15 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.physicaltracker.data.dao.ActivityDao
 import com.example.physicaltracker.data.dao.GeofenceDao
+import com.example.physicaltracker.data.dao.GeofenceTransitionDao
 import com.example.physicaltracker.data.entity.ActivityEntity
 import com.example.physicaltracker.data.entity.GeofenceEntity
+import com.example.physicaltracker.data.entity.GeofenceTransitionEntity
 
-// Contiene il database
-@Database(entities = [ActivityEntity::class, GeofenceEntity::class], version = 3, exportSchema = false)
+@Database(entities = [ActivityEntity::class, GeofenceEntity::class, GeofenceTransitionEntity::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun activityDao(): ActivityDao
-    abstract fun geofenceDao(): GeofenceDao // Aggiungi questo metodo per il DAO Geofence
+    abstract fun geofenceDao(): GeofenceDao
+    abstract fun geofenceTransitionDao(): GeofenceTransitionDao
 
     companion object {
         @Volatile

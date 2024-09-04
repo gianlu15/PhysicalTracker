@@ -1,6 +1,7 @@
 package com.example.physicaltracker.data
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -22,6 +23,7 @@ class GeofenceViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun insert(geofence: GeofenceEntity) {
+        Log.i("Geofence", "evento inserito")
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(geofence)
         }
