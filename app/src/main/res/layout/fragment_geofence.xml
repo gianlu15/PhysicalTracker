@@ -30,7 +30,7 @@
         android:id="@+id/btnRemoveGeofence"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Remove all Geofences"
+        android:text="Remove Geofence"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
