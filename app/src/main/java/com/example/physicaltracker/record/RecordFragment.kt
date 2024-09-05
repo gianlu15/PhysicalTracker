@@ -74,7 +74,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
 
         btnStart.setOnClickListener {
             val selectedActivityType = activitySpinner.selectedItem.toString()
-            isWalking = selectedActivityType == "Walking"
+            isWalking = (selectedActivityType == "Walking" || selectedActivityType == "Running")
 
             val startTime = System.currentTimeMillis()
             val date = startTime

@@ -52,13 +52,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun showNotification(context: Context, message: String) {
-        createNotificationChannel(context)
+        createNotificationChannelIfNeeded(context)
 
-        // Controlla se l'app ha il permesso per inviare notifiche
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            val intent = Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
+            val intent = Intent(context, MainActivity::class.java)
             val pendingIntent: PendingIntent = PendingIntent.getActivity(
                 context,
                 0,
@@ -74,27 +71,29 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
 
-            with(NotificationManagerCompat.from(context)) {
-                notify(NOTIFICATION_ID, builder.build())
-            }
+            val notificationManager = NotificationManagerCompat.from(context)
+            notificationManager.notify(NOTIFICATION_ID, builder.build())
+
         } else {
             Log.e("GeofenceBroadcastReceiver", "Permission for notifications not granted")
-            // Qui puoi anche aggiungere una logica per gestire il caso in cui il permesso non sia concesso
         }
     }
 
-
-    private fun createNotificationChannel(context: Context) {
+    private fun createNotificationChannelIfNeeded(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Geofence Channel"
-            val descriptionText = "Channel for geofence alerts"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val existingChannel = notificationManager.getNotificationChannel(CHANNEL_ID)
+
+            if (existingChannel == null) {
+                val name = "Geofence Channel"
+                val descriptionText = "Channel for geofence alerts"
+                val importance = NotificationManager.IMPORTANCE_HIGH
+                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                    description = descriptionText
+                }
+                notificationManager.createNotificationChannel(channel)
             }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
+
 }

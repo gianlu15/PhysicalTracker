@@ -46,7 +46,6 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
     private lateinit var btnRemoveGeofences: Button
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -66,7 +65,11 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             if (selectedLatLng != null) {
                 showAddGeofenceDialog(selectedLatLng!!) // Mostra il dialog per inserire il nome
             } else {
-                Toast.makeText(requireContext(), "Please select a location on the map", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Please select a location on the map",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -74,7 +77,11 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             if (selectedGeofenceId != null) {
                 removeGeofence(selectedGeofenceId!!) // Rimuovi il Geofence selezionato
             } else {
-                Toast.makeText(requireContext(), "Please select a geofence to remove", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Please select a geofence to remove",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -100,6 +107,9 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
@@ -117,7 +127,9 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
                 map.clear()
                 geofences.forEach { geofence ->
                     val latLng = LatLng(geofence.latitude, geofence.longitude)
-                    val marker = map.addMarker(MarkerOptions().position(latLng).title(geofence.name)) // Mostra il nome del Geofence come titolo
+                    val marker = map.addMarker(
+                        MarkerOptions().position(latLng).title(geofence.name)
+                    ) // Mostra il nome del Geofence come titolo
                     marker?.tag = geofence.geofenceId // Associa l'ID del Geofence al marker
                     map.addCircle(
                         CircleOptions()
@@ -133,7 +145,11 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         } else {
             ActivityCompat.requestPermissions(
                 requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                ),
                 1001
             )
         }
@@ -165,7 +181,6 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
     }
 
 
-
     private fun addGeofence(latLng: LatLng, geofenceName: String) {
         val geofenceId = "GEOFENCE_ID_${System.currentTimeMillis()}"
         val geofence = Geofence.Builder()
@@ -180,43 +195,60 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             .addGeofence(geofence)
             .build()
 
+
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Richiedi i permessi se non sono già stati concessi
+            geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
+                addOnSuccessListener {
+                    val geofenceEntity = GeofenceEntity(
+                        geofenceId = geofenceId,
+                        latitude = latLng.latitude,
+                        longitude = latLng.longitude,
+                        radius = 100f,
+                        transitionType = Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT,
+                        name = geofenceName  // Salva il nome del Geofence
+                    )
+                    geofenceViewModel.insert(geofenceEntity)
+                    Toast.makeText(
+                        requireContext(),
+                        "Geofence added successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                addOnFailureListener { e ->
+                    val errorMessage = when (e) {
+                        is SecurityException -> "Permission denied: ${e.message}"
+                        else -> "Unknown error: ${e.message}"
+                    }
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to add geofence: $errorMessage",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
             ActivityCompat.requestPermissions(
                 requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                ),
                 1001
             )
-            return
-        }
-
-        geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
-            addOnSuccessListener {
-                val geofenceEntity = GeofenceEntity(
-                    geofenceId = geofenceId,
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude,
-                    radius = 100f,
-                    transitionType = Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT,
-                    name = geofenceName  // Salva il nome del Geofence
-                )
-                geofenceViewModel.insert(geofenceEntity)
-                Toast.makeText(requireContext(), "Geofence added successfully", Toast.LENGTH_SHORT).show()
-            }
-            addOnFailureListener { e ->
-                val errorMessage = when (e) {
-                    is SecurityException -> "Permission denied: ${e.message}"
-                    else -> "Unknown error: ${e.message}"
-                }
-                Toast.makeText(requireContext(), "Failed to add geofence: $errorMessage", Toast.LENGTH_SHORT).show()
-            }
         }
     }
-
 
 
     private fun removeGeofence(geofenceId: String) {
@@ -224,13 +256,15 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             addOnSuccessListener {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     // Trova il Geofence con l'ID specifico e rimuovilo dal database
-                    val geofenceToDelete = geofenceViewModel.allGeofences.value?.find { it.geofenceId == geofenceId }
+                    val geofenceToDelete =
+                        geofenceViewModel.allGeofences.value?.find { it.geofenceId == geofenceId }
                     geofenceToDelete?.let { geofenceViewModel.delete(it) }
                 }
                 Toast.makeText(requireContext(), "Geofence removed", Toast.LENGTH_SHORT).show()
             }
             addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to remove geofence", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to remove geofence", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
         btnRemoveGeofences.isEnabled = false
@@ -252,7 +286,11 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
             if (geofenceName.isNotEmpty()) {
                 addGeofence(latLng, geofenceName)
             } else {
-                Toast.makeText(requireContext(), "Geofence name cannot be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Geofence name cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             dialog.dismiss()
         }

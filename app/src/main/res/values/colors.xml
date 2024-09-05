@@ -2,20 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#4D9DE0</color> <!-- Un colore blu -->
-    <color name="colorPrimaryDark">#303F9F</color> <!-- Una variante più scura del blu -->
-    <color name="colorAccent">#FF4081</color> <!-- Un colore rosa acceso -->
-    <color name="colorToolbarText">#FFFFFF</color> <!-- Bianco per il testo della Toolbar -->
+    <color name="colorPrimary">#4D9DE0</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorToolbarText">#FFFFFF</color>
 
     <color name="startBtn">#3BB273</color>
     <color name="stopBtn">#E15554</color>
     <color name="pauseBtn">#9E9E9E</color>
     <color name="filterBtn">#8D3B72</color>
 
-    <color name="firstActivityPie">#EF476F</color>
-    <color name="secondActivityPie">#FFD166</color>
-    <color name="thirdActivityPie">#06D6A0</color>
-    <color name="fourthActivityPie">#826AED</color>
-    <color name="fifthActivityPie">#D8D4F2</color>
+    <color name="firstActivity">#EF476F</color>
+    <color name="secondActivity">#FFD166</color>
+    <color name="thirdActivity">#06D6A0</color>
+    <color name="fourthActivity">#826AED</color>
+    <color name="fifthActivity">#92B4A7</color>
+    <color name="sixthActivity">#5E0B15</color>
+    <color name="seventhActivity">#E4C1F9</color>
 
 </resources>
