@@ -9,12 +9,11 @@ import com.example.physicaltracker.data.dao.GeofenceDao
 import com.example.physicaltracker.data.entity.ActivityEntity
 import com.example.physicaltracker.data.entity.GeofenceEntity
 
-// Contiene il database
 @Database(entities = [ActivityEntity::class, GeofenceEntity::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun activityDao(): ActivityDao
-    abstract fun geofenceDao(): GeofenceDao // Aggiungi questo metodo per il DAO Geofence
+    abstract fun geofenceDao(): GeofenceDao
 
     companion object {
         @Volatile
@@ -23,6 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
         fun getDatabase(context: Context): AppDatabase {
             val tempInstance = INSTANCE
 
+            //Use of Singleton
             if (tempInstance != null) {
                 return tempInstance
             }

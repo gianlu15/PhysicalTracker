@@ -10,8 +10,7 @@ import com.example.physicaltracker.data.repository.ActivityRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-// Provide data to UI and survive configuration changes, act as communication center between Repository and UI
-
+// ViewModel provide data to UI and survive configuration changes, act as communication center between Repository and UI
 class ActivityViewModel(application: Application): AndroidViewModel(application) {
 
     val readAllData: LiveData<List<ActivityEntity>>

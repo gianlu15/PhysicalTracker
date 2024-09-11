@@ -14,13 +14,11 @@ import com.example.physicaltracker.data.ActivityViewModel
 class NotificationWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     override fun doWork(): Result {
-        // Leggi lo stato del cronometro da SharedPreferences
         val sharedPreferences = applicationContext.getSharedPreferences("activity_tracker_prefs", Context.MODE_PRIVATE)
         val isChronometerRunning = sharedPreferences.getBoolean("is_chronometer_running", false)
 
-        Log.i("NotificationWorker", "Il cronometro è $isChronometerRunning")
+        Log.i("NotificationWorker", "Chronometer is $isChronometerRunning")
 
-        // Controlla se il cronometro è in esecuzione
         if (!isChronometerRunning)  {
             showNotification()
         }

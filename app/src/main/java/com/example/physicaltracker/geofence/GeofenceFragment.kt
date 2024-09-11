@@ -53,17 +53,15 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        // Inizializza la mappa
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // Inizializza i pulsanti
         val btnAddGeofence: Button = view.findViewById(R.id.btnAddGeofence)
         btnRemoveGeofences = view.findViewById(R.id.btnRemoveGeofence)
 
         btnAddGeofence.setOnClickListener {
             if (selectedLatLng != null) {
-                showAddGeofenceDialog(selectedLatLng!!) // Mostra il dialog per inserire il nome
+                showAddGeofenceDialog(selectedLatLng!!)
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -75,7 +73,7 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
 
         btnRemoveGeofences.setOnClickListener {
             if (selectedGeofenceId != null) {
-                removeGeofence(selectedGeofenceId!!) // Rimuovi il Geofence selezionato
+                removeGeofence(selectedGeofenceId!!)
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -86,7 +84,6 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         }
 
 
-        // Prepara l'intento per il GeofenceBroadcastReceiver
         geofencePendingIntent = PendingIntent.getBroadcast(
             requireContext(),
             0,
@@ -114,7 +111,6 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         ) {
             map.isMyLocationEnabled = true
 
-            // Richiedi la posizione corrente
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
@@ -122,15 +118,14 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
                 }
             }
 
-            // Osserva i geofence dal database e disegna sulla mappa
             geofenceViewModel.allGeofences.observe(viewLifecycleOwner) { geofences ->
                 map.clear()
                 geofences.forEach { geofence ->
                     val latLng = LatLng(geofence.latitude, geofence.longitude)
                     val marker = map.addMarker(
                         MarkerOptions().position(latLng).title(geofence.name)
-                    ) // Mostra il nome del Geofence come titolo
-                    marker?.tag = geofence.geofenceId // Associa l'ID del Geofence al marker
+                    )
+                    marker?.tag = geofence.geofenceId
                     map.addCircle(
                         CircleOptions()
                             .center(latLng)
@@ -155,12 +150,11 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         }
 
 
-        // Imposta l'ascoltatore per il clic sul marker
         map.setOnMarkerClickListener { marker ->
-            selectedGeofenceId = marker.tag as? String // Imposta l'ID del Geofence selezionato
-            marker.showInfoWindow() // Mostra l'InfoWindow con il nome del Geofence
+            selectedGeofenceId = marker.tag as? String
+            marker.showInfoWindow()
             btnRemoveGeofences.isEnabled = true
-            true // Restituisce true per indicare che l'evento è stato gestito
+            true
         }
 
         map.setOnMapClickListener { latLng ->
@@ -216,7 +210,7 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
                         longitude = latLng.longitude,
                         radius = 100f,
                         transitionType = Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT,
-                        name = geofenceName  // Salva il nome del Geofence
+                        name = geofenceName
                     )
                     geofenceViewModel.insert(geofenceEntity)
                     Toast.makeText(
@@ -255,7 +249,6 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         geofencingClient.removeGeofences(listOf(geofenceId)).run {
             addOnSuccessListener {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    // Trova il Geofence con l'ID specifico e rimuovilo dal database
                     val geofenceToDelete =
                         geofenceViewModel.allGeofences.value?.find { it.geofenceId == geofenceId }
                     geofenceToDelete?.let { geofenceViewModel.delete(it) }
@@ -275,12 +268,10 @@ class GeofenceFragment : Fragment(R.layout.fragment_geofence), OnMapReadyCallbac
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Add Geofence")
 
-        // Imposta un campo di input per il nome del Geofence
         val input = EditText(requireContext())
         input.hint = "Enter Geofence Name"
         builder.setView(input)
 
-        // Imposta i pulsanti del dialogo
         builder.setPositiveButton("Add") { dialog, _ ->
             val geofenceName = input.text.toString()
             if (geofenceName.isNotEmpty()) {

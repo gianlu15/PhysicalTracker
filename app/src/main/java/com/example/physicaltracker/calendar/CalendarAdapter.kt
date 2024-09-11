@@ -39,7 +39,6 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    // Formatta la durata in ore, minuti e secondi
     private fun formatDuration(duration: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(duration)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60
@@ -47,9 +46,8 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.MyViewHolder>() {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
-    // Formatta il tempo in una stringa leggibile
     private fun formatTime(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
         val date = Date(timeInMillis)
         return sdf.format(date)
     }

@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.selectedItemId = R.id.myNewActivity
 
-        // Imposta il listener per la selezione degli elementi
+        // Listener used to select an element
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.myStatistics -> setCurrentFragment(chartsFragment)
@@ -124,14 +124,6 @@ class MainActivity : AppCompatActivity() {
             for (i in grantResults.indices) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     Log.i("PERMISSION REQUEST", "${permissions[i]} granted.")
-                } else {
-                    Log.w("PERMISSION REQUEST", "${permissions[i]} denied.")
-                    // Se il permesso di posizione è stato negato, disabilita la funzionalità di geofencing
-                    if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION ||
-                        permissions[i] == Manifest.permission.ACCESS_BACKGROUND_LOCATION) {
-                        Toast.makeText(this, "Geofencing requires location permissions to be granted.", Toast.LENGTH_SHORT).show()
-                        // Disabilita le funzionalità basate sulla posizione qui
-                    }
                 }
             }
         }
@@ -153,10 +145,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun schedulePeriodicNotification() {
-        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.HOURS)
             .setInitialDelay(1, TimeUnit.HOURS)
             .build()
 
+        //Start the workRequest task
         WorkManager.getInstance(this).enqueue(workRequest)
     }
+
 }

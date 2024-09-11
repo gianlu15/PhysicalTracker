@@ -38,7 +38,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                // Non fare nulla
             }
         }
 

@@ -31,8 +31,8 @@ class ActivityRepository(private val activityDao: ActivityDao) {
         return activityDao.getActivitiesByDate(startOfDay, endOfDay)
     }
 
+    //Function to add Unknown Activities when there is no reocord in 30mins
     suspend fun insertUnknownActivities() {
-        Log.i("ActivityRepository", "Check effettuato")
         val activities = activityDao.readAllDataSortedByStartTime()
 
         for (i in 0 until activities.size - 1) {
@@ -43,17 +43,17 @@ class ActivityRepository(private val activityDao: ActivityDao) {
             val startTimeNext = nextActivity.startTime
 
 
-            // Calcola il gap tra le attività
+            // Gap between two activities
             val gap = startTimeNext - endTime
 
-            // Se il gap è maggiore di una soglia (es. 30 minuti), inserisci "unknown"
+            // Insert Unkonwn if gap > 30mins
             if (gap > TimeUnit.MINUTES.toMillis(30)) {
                 val unknownActivity = ActivityEntity(
                     type = "unknown",
                     duration = gap,
                     startTime = endTime,
                     endTime = startTimeNext,
-                    date = endTime // Puoi usare endTime o un'altra logica per la data
+                    date = endTime
                 )
                 activityDao.addActivity(unknownActivity)
             }
@@ -61,9 +61,4 @@ class ActivityRepository(private val activityDao: ActivityDao) {
 
     }
 
-    private fun formatTime(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
-        val date = Date(timeInMillis)
-        return sdf.format(date)
-    }
 }

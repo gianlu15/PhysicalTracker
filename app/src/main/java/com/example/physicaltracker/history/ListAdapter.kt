@@ -40,7 +40,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    // Funzione per formattare la durata in ore, minuti e secondi
+
+    //Used by duration
     private fun formatDuration(duration: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(duration)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60
@@ -48,9 +49,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
-    // Funzione per formattare il tempo in una data leggibile
+    // Used by start time and end time
     private fun formatTime(timeInMillis: Long): String {
-        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Mostra solo l'ora e i minuti
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
         val date = Date(timeInMillis)
         return sdf.format(date)
     }

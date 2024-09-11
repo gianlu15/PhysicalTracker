@@ -26,7 +26,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.i("Geofence", "evento ricevuto")
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if (geofencingEvent != null) {
@@ -38,7 +37,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         }
 
         val geofenceTransition = geofencingEvent?.geofenceTransition
-        Log.i("Geofence", "Transizione $geofenceTransition")
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             showNotification(context, "Entered geofence area")

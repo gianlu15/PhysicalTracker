@@ -1,6 +1,9 @@
 package com.example.physicaltracker.record
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -14,6 +17,8 @@ import android.widget.Button
 import android.widget.Chronometer
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.physicaltracker.R
@@ -29,6 +34,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
     private lateinit var sensorManager: SensorManager
     private var stepCounterSensor: Sensor? = null
     private var steps: Int = 0
+    private var currentSteps: Int = 0
     private var isWalking = false
 
     private var currentActivity: ActivityEntity? = null
@@ -41,7 +47,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         chronometer = view.findViewById(R.id.chronometer)
         tvStepsCounter = view.findViewById(R.id.tvStepsCounter)
 
-        // Inizializza il sensore di passi
+        // Get sensor for steps
         sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
@@ -58,18 +64,20 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         btnPauseResume.isEnabled = false
         btnStop.isEnabled = false
 
-        // Ripristina lo stato del cronometro e dei pulsanti
+        //When user change fragment while chronometer is running
         if (myActivityViewModel.isChronometerRunning) {
             chronometer.base = myActivityViewModel.chronometerBase
             chronometer.start()
             btnStart.isEnabled = false
             btnPauseResume.isEnabled = true
             btnStop.isEnabled = true
+            activitySpinner.isEnabled = false
         } else if (myActivityViewModel.chronometerBase != 0L) {
             chronometer.base = myActivityViewModel.chronometerBase
             btnStart.isEnabled = false
             btnPauseResume.isEnabled = true
             btnStop.isEnabled = true
+            activitySpinner.isEnabled = false
         }
 
         btnStart.setOnClickListener {
@@ -90,9 +98,12 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
 
             saveChronometerState(true)
 
-            // Avvia il contapassi solo se l'attività è "Walking"
+            activitySpinner.isEnabled = false
+
+            //Get the steps only if activity are Walking or Running
             if (isWalking) {
-                steps = 0 // Resetta il contatore dei passi
+                steps = 0
+                currentSteps = 0
                 sensorManager.registerListener(sensorEventListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL)
             }
 
@@ -114,10 +125,11 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         }
 
         btnStop.setOnClickListener {
-            // Ferma il contapassi
             if (isWalking) {
                 sensorManager.unregisterListener(sensorEventListener)
-                currentActivity?.steps = steps
+                currentActivity?.steps = currentSteps
+                currentSteps = 0
+                steps = 0
             }
 
             stopChronometer(currentActivity)
@@ -127,6 +139,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             btnStart.isEnabled = true
             btnPauseResume.isEnabled = false
             btnStop.isEnabled = false
+            activitySpinner.isEnabled = true
         }
     }
 
@@ -136,8 +149,6 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             myActivityViewModel.chronometerBase = chronometer.base
             chronometer.start()
             myActivityViewModel.isChronometerRunning = true
-
-            Log.i("RecordFragment", "Cronometro avviato")
         }
     }
 
@@ -146,8 +157,6 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             chronometer.stop()
             myActivityViewModel.pauseOffset = SystemClock.elapsedRealtime() - chronometer.base
             myActivityViewModel.isChronometerRunning = false
-
-            Log.i("RecordFragment", "Cronometro fermato a ${myActivityViewModel.pauseOffset}")
         }
     }
 
@@ -156,8 +165,6 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             chronometer.base = SystemClock.elapsedRealtime() - myActivityViewModel.pauseOffset
             chronometer.start()
             myActivityViewModel.isChronometerRunning = true
-
-            Log.i("RecordFragment", "Cronometro ripreso da ${myActivityViewModel.pauseOffset}")
         }
     }
 
@@ -166,9 +173,12 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         if (currentActivity != null) {
             currentActivity.duration = SystemClock.elapsedRealtime() - chronometer.base
             currentActivity.endTime = System.currentTimeMillis()
-            insertDataToDatabase(currentActivity)
-            myActivityViewModel.checkAndInsertUnknownActivities()
 
+            //Save the new activity
+            insertDataToDatabase(currentActivity)
+
+            //Check if the previous activity was unknown
+            myActivityViewModel.checkAndInsertUnknownActivities()
         }
         resetChronometer()
     }
@@ -178,28 +188,32 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
         myActivityViewModel.isChronometerRunning = false
         myActivityViewModel.chronometerBase = 0L
         chronometer.base = SystemClock.elapsedRealtime()
+        tvStepsCounter.text = "0 steps"
     }
 
     private fun insertDataToDatabase(currentActivity: ActivityEntity?) {
         if (currentActivity != null) {
             myActivityViewModel.addActivity(currentActivity)
             Log.i("RecordFragment", "Insert ${currentActivity.toString()} into db")
+
+            Toast.makeText(requireContext(), "Activity added: ${currentActivity.type}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private val sensorEventListener = object : SensorEventListener {
+        @SuppressLint("SetTextI18n")
         override fun onSensorChanged(event: SensorEvent) {
             if (event.sensor.type == Sensor.TYPE_STEP_COUNTER) {
                 if (steps == 0) {
                     steps = event.values[0].toInt()
                 }
-                val currentSteps = event.values[0].toInt() - steps
+                currentSteps = event.values[0].toInt() - steps
                 tvStepsCounter.text = "$currentSteps steps"
             }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-            // Non è necessario gestire questo caso per il contapassi
+            // Doesn't need to handle
         }
     }
 
@@ -210,4 +224,5 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
             apply()
         }
     }
+
 }

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/myStatistics"
-        android:title="Chart"
+        android:title="Charts"
         android:icon="@drawable/ic_statistics_foreground" />
 
     <item

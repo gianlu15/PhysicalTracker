@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- SupportMapFragment per visualizzare la mappa -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -14,7 +13,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Pulsante per aggiungere un geofence -->
     <Button
         android:id="@+id/btnAddGeofence"
         android:layout_width="0dp"
@@ -25,7 +23,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/map" />
 
-    <!-- Pulsante per rimuovere tutti i geofence -->
     <Button
         android:id="@+id/btnRemoveGeofence"
         android:layout_width="0dp"
